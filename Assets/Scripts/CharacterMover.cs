@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(GroundDetector))]
@@ -24,6 +25,11 @@ public class CharacterMover : MonoBehaviour
     Quaternion velocityRotation;
     Vector3 lastPos;
     Quaternion lastRot;
+
+
+    Vector3 mousePos;
+    public float angleYMax;
+    public float angleYMin;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +41,15 @@ public class CharacterMover : MonoBehaviour
     }
     private void Update()
     {
+        mousePos = Mouse.current.delta.ReadValue();
+
+        mousePos.y = Mathf.Clamp(mousePos.y, angleYMin, angleYMax);
+
+        cam.transform.localEulerAngles += new Vector3(-mousePos.y, mousePos.x, 0);
+
+
+
+
         if (gd.grounded && input.Player.Jump.WasPressedThisFrame())
         {
             rb.linearVelocity = transform.up * jumpForce;
@@ -72,6 +87,7 @@ public class CharacterMover : MonoBehaviour
             mov.z = mov.y;
             mov.y = 0;
             float magnitude = Mathf.Clamp01(mov.magnitude);
+
             if (magnitude > 0)
             {
                 mov = cam.transform.TransformDirection(mov);
@@ -96,6 +112,7 @@ public class CharacterMover : MonoBehaviour
             rb.Move(rb.position + currentMov * speedMovement * Time.fixedDeltaTime, rot);
         }
     }
+
     void DroppedOff()
     {
         if (airSpeedFollowupCurrent > 0)

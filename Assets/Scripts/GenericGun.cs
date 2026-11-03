@@ -5,6 +5,9 @@ using UnityEngine.Events;
 
 public class GenericGun : MonoBehaviour
 {
+    InputSystem_Actions _input;
+
+
     [Header("Weapon")]
     public int clipMax = 30;
     public int clipCurrent = 30;
@@ -23,8 +26,15 @@ public class GenericGun : MonoBehaviour
     public Vector3 knockbackRotation;
     Vector3 originalPosition;
     Quaternion originalRotation;
+
+
+
+
     private void Start()
     {
+        _input = new InputSystem_Actions();
+        _input.Enable();
+
         originalPosition = transform.localPosition;
         originalRotation = transform.localRotation;
     }
@@ -33,6 +43,12 @@ public class GenericGun : MonoBehaviour
     {
         transform.localPosition = Vector3.Lerp(transform.localPosition, originalPosition, positionRecover * Time.deltaTime);
         transform.localRotation = Quaternion.Lerp(transform.localRotation, originalRotation, rotationRecover * Time.deltaTime);
+
+
+        if (_input.Player.Shoot.IsPressed()){
+            Fire();
+        }
+
     }
     public void Fire()
     {
